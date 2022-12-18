@@ -39,8 +39,7 @@ iv = key[0:128]
 cipherKey = key[128:384]
 macKey = key[384:640]
 ```
-
-![db_schema](https://user-images.githubusercontent.com/72550341/208308204-e40b20c2-e9b9-4ff0-9f13-2556643de4d9.png)
+![full_db_schema](https://user-images.githubusercontent.com/72550341/208316291-943b19dd-086e-496f-97cc-17f6977f133b.png)
 
 Plusem takiego rozwiązania jest jednoznaczna uwierzytelnienia metodą "coś co wiem". Minusem jest brak innej metody aby zwiększyć skuteczność rozwiązania. Dodatkowo w przypadku zgubienia klucza (hasło nie będzie przechowywane w bazie danych ) dane przepadają.
 ## Rozwiązania technologiczne
