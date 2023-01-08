@@ -8,7 +8,7 @@ user_handler = Blueprint('user_handler', __name__, template_folder='../static/te
 service = UserHandlingService(db)
 
 
-@user_handler.route("/", method=["GET"])
+@user_handler.route("/", methods=["GET"])
 def redirect_login():
     return redirect("/login", 301)
 
@@ -16,7 +16,7 @@ def redirect_login():
 @user_handler.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login_page.html")
+        return render_template("login.html")
     if is_logged():
         return redirect("/entry")
 
@@ -26,7 +26,7 @@ def login():
     if service.login(form_username, form_password):
         return redirect("/entry")
     else:
-        return render_template("login_page.html", result_info="Wrong login or password")
+        return render_template("login.html", result_info="Wrong login or password")
 
 
 @user_handler.route("/logout", methods=["GET"])
@@ -49,4 +49,4 @@ def register():
     elif service.register(username, password):
         return redirect("/login", 302)
     else:
-        return render_template("register.html", result_info="User like this already exists")
+        return render_template("register.html", result_info="User already exists")

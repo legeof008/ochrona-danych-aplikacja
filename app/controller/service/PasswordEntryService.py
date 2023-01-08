@@ -4,7 +4,6 @@ from flask_login import current_user
 from flask_sqlalchemy import SQLAlchemy
 from pbkdf2 import PBKDF2
 
-from model.List import List
 from model.PasswordEntry import PasswordEntry
 
 
@@ -13,12 +12,47 @@ def list_all() -> [PasswordEntry]:
     return all_password_entries
 
 
+def get_hash_with(password: str, salt: bytes) -> bytes:
+    password_hash = PBKDF2(password, salt).read(80)
+    return password_hash
+
+
+def encrypt_with(password: str, plaintext: str, salt: bytes) -> [bytes]:
+    key = PBKDF2(password, salt).read(80)
+    iv = key[0:16]
+    cipher_key = key[16:48]
+    mac_key = key[48:80]
+
+    cipher = AES.new(cipher_key, AES.MODE_CBC, iv)
+    difference = 16 - (len(plaintext) % 16)
+    nonce = get_random_bytes(difference)
+    cipher_text = cipher.encrypt(plaintext.encode() + nonce)
+
+    return [cipher_text, mac_key, difference]
+
+
+def decrypt_with(username: str, password: str, ciphertext: bytes, salt: bytes, mac_key: bytes) -> bytes:
+    key = PBKDF2(password + username, salt).read(80)
+    iv = key[0:16]
+    cipher_key = key[16:48]
+    mac_key_current = key[48:80]
+
+    cipher = AES.new(cipher_key, AES.MODE_CBC, iv)
+    plaintext = cipher.decrypt(ciphertext)
+    return plaintext
+
+
 class PasswordEntryService:
     def __init__(self, database: SQLAlchemy):
         self.database = database
 
-    def add(self, username: str, password: str, servicename: str, owner: str):
-        new_entry = PasswordEntry(username, password, servicename, owner)
+    def add(self, username: str, password: str, special_password: str, servicename: str, owner: str):
+        salt = get_random_bytes(10)
+
+        cipher_text, mac_key, nonce_len = encrypt_with(special_password + username, password, salt)
+
+        new_entry = PasswordEntry(username, cipher_text, servicename, owner, salt, mac_key, nonce_len)
+
         self.database.session.add(new_entry)
         self.database.session.commit()
 
@@ -33,20 +67,3 @@ class PasswordEntryService:
     def list_by_name(self, username) -> [PasswordEntry]:
         entries = self.database.session.query(PasswordEntry).filter(PasswordEntry.owner == username).all()
         return entries
-
-    def encrypt_with(self, password: str, plaintext: str) -> bytes:
-        salt = get_random_bytes(10)
-        key = PBKDF2(password, salt).read(80)
-        iv = key[0:16]
-        cipher_key = key[16:48]
-        mac_key = key[48:80]
-
-        self.database.session.add(List(salt, mac_key, current_user.username))
-
-        cipher = AES.new(cipher_key, AES.MODE_CBC, iv)
-
-        return cipher.encrypt(plaintext.encode())
-
-    def decrypt_with(self, password: str, ciphertext: bytes) -> str:
-        list = self.database.session.get()
-        key = PBKDF2(password, list.salt)

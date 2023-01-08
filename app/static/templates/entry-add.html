@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <form action="/entry-add" method="post">
+        <label for="username">Username within of the account you wish to save password to:</label><br>
+        <input type="text" id="username" name="username"><br><br>
+        <label for="username">Password within to the account you wish to save password to:</label><br>
+        <input type="password" id="password" name="password"><br><br>
+        <label for="username">The name of the service of said account:</label><br>
+        <input type="text" id="servicename" name="servicename"><br><br>
+        <label for="username">Special password with which you wish to encrypt this account (leave empty for your default account password): </label><br>
+        <input type="text" id="special_password" name="special_password"><br><br>
+        <input type="submit" value="Submit">
+        <h3 name="result_info">{{result_info}}</h3>
+    </form>
+</body>
+
+</html>

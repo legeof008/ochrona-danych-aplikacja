@@ -9,7 +9,7 @@ entry_handler = Blueprint('entry_handler', __name__, template_folder='/static/te
 service = PasswordEntryService(db)
 
 
-@entry_handler.route('/entry', method=["POST", "GET"])
+@entry_handler.route('/entry', methods=["POST", "GET"])
 @login_required
 def entries():
     all_entries = service.list_by_name(request.form.get('search_by_user')) if request.method == "POST" else list_all()
@@ -24,8 +24,11 @@ def add_entry():
     username = request.form.get('username')
     password = request.form.get('password')
     servicename = request.form.get('servicename')
+    special_password = request.form.get('special_password')
+    if not special_password:
+        return render_template("entry-add.html",result_info="The encryption password is required !")
 
-    service.add(username, password, servicename, current_user.username)
+    service.add(username, password, special_password, servicename, current_user.username)
     return redirect("/entry", 302)
 
 

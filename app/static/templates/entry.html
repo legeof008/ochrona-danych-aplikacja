@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+
+    <form action="/logout" method="get">
+        <button value="Logout" style="float: right;">Logout</button>
+    </form>
+    <form action="/entry-add" method="get">
+        <button value="Add entry" style="float: right;">Add entry</button>
+    </form>
+
+    <div class="autocomplete" style="width:300px;">
+        <form autocomplete="off" action="/entries" method="post">
+            <input placeholder="search by user..." value="" style="" id="search_by_user" name="search_by_user">
+            <input type="submit">
+        </form>
+    </div>
+
+
+    <h1>{% block title %} Entries {% endblock %}</h1>
+    <h5>{{user}}</h5>
+    <br><br>
+    <div style="width: 50%; margin: auto">
+        {% for entry in entries %}
+        <div style="padding: 10px; background-color: #EEE; margin: 20px">
+            <p style="font-size: 10px"> id: {{ entry.id }}</p>
+            <p style="font-size: 10px"> username: {{ entry.username }}</p>
+            <p style="font-size: 10px"> service name: {{ entry.servicename }}</p>
+            <p style="font-size: 10px"> {{ entry.password }}</p>
+            <p style="font-size: 10px"> owner: {{ entry.owner }}</p>
+            <form action="/entry-delete?id={{entry.id}}" method="post">
+                <button name="button{{entry.id}}" value="Delete">Delete</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+</html>

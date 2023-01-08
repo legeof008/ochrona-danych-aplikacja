@@ -2,18 +2,26 @@ from model.project_configuration import db
 
 
 class PasswordEntry(db.Model):
-    __tablename__ = 'passwordentry'
-    id = db.Column(db.Integer, unique=True)
-    username = db.Column(db.Integer, primary_key=True, unique=True)
+    __tablename__ = 'passwords'
+    id = db.Column(db.Integer, unique=True, primary_key=True)
+    username = db.Column(db.String, nullable=False)
     password = db.Column(db.LargeBinary, nullable=False)
     servicename = db.Column(db.String)
-    owner = db.Column(db.String, unique=True, nullable=False)
+    owner = db.Column(db.String, nullable=False)
 
-    def __init__(self, username, password, servicename, owner):
+    salt = db.Column(db.LargeBinary, nullable=False)
+    mac_key = db.Column(db.LargeBinary, nullable=False)
+    nonce_len = db.Column(db.Integer)
+
+    def __init__(self, username: str, password: bytes, servicename: str, owner: str, salt: bytes,
+                 mac_key: bytes, nonce_len: int):
         self.username = username
         self.password = password
         self.servicename = servicename
         self.owner = owner
+        self.salt = salt
+        self.mac_key = mac_key
+        self.nonce_len = nonce_len
 
     def get_id(self):
         return self.id
@@ -29,4 +37,3 @@ class PasswordEntry(db.Model):
 
     def get_servicename(self):
         return self.servicename
-
