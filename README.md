@@ -44,3 +44,10 @@ macKey = key[384:640]
 Plusem takiego rozwiązania jest jednoznaczna uwierzytelnienia metodą "coś co wiem". Minusem jest brak innej metody aby zwiększyć skuteczność rozwiązania. Dodatkowo w przypadku zgubienia klucza (hasło nie będzie przechowywane w bazie danych ) dane przepadają.
 ## Rozwiązania technologiczne
 Mimo iż nie chcę się jednoznacznie przywiązywać do jakiejkolwiek technologii, to na pewno wiem, że będę używał pythonowego **flask'a** oraz jego podpakietów zorientowanych pod poszczególne funkcjonalności jak np. **flask-login**,**flask-sql** etc. Jak w każdym projekcie, założenia projektu mogą ewoluować ze względu na ograniczenia techniczne, ja jednak wolałbym granicę teoretyczną pozostawić twardą, a techniczną nieco bardziej płynną.
+
+# Roadmap funkcjonalności do zrobienia
+- [ ] w pełni bezpieczna rejestracja
+- [ ] w pełni bezpieczne logowanie
+- [x] szyfrowanie haseł
+- [ ] deszyfrowanie haseł
+- [ ] zabezpieczenie timeout
