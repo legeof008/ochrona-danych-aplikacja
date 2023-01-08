@@ -58,7 +58,7 @@ class PasswordEntryService:
 
     def delete(self, entry_id: int) -> bool:
         existing_entry = PasswordEntry.query.get(entry_id)
-        if existing_entry.owner == current_user.username or current_user.username == 'admin':
+        if existing_entry.owner == current_user.username:
             self.database.session.delete(existing_entry)
             self.database.session.commit()
             return True

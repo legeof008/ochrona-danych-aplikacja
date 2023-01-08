@@ -12,7 +12,7 @@ service = PasswordEntryService(db)
 @entry_handler.route('/entry', methods=["POST", "GET"])
 @login_required
 def entries():
-    all_entries = service.list_by_name(request.form.get('search_by_user')) if request.method == "POST" else list_all()
+    all_entries = service.list_by_name(current_user.username)
     return render_template("entry.html", entries=all_entries, user=current_user.username)
 
 

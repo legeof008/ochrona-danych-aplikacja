@@ -4,27 +4,75 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script>
+        window.addEventListener("load", function () {
+            password_input = document.getElementById("password");
+            message_output = document.getElementById("password_criteria")
 
+            password_input.addEventListener("input", function (event) {
+
+                fetch("/password?" + new URLSearchParams({
+                    check: encodeURIComponent(password_input.value),
+                })).then((response) => response.json()).then((json) => {
+                        let output = "";
+                        let indicator = "";
+                        for (let key in json) {
+                            switch (key) {
+                                case 'password':
+                                    indicator = json[key] === false ? " valid.\n" : " not valid.\n";
+                                    output += "Password is" + indicator;
+                                    break;
+                                case 'length':
+                                    indicator = json[key] === false ? " valid.\n" : " not valid.\n";
+                                    output += "Length of the password is" + indicator;
+                                    break;
+                                case 'digits':
+                                    indicator = json[key] === false ? " valid " : " not valid ";
+                                    output += "There is a" + indicator + "number of digits.\n";
+                                    break;
+                                case 'uppercase':
+                                    indicator = json[key] === false ? " valid " : " not valid ";
+                                    output += "There is a" + indicator + "number of uppercase letters.\n";
+                                    break;
+                                case 'lowercase':
+                                    indicator = json[key] === false ? " valid " : " not valid ";
+                                    output += "There is a" + indicator + "number of lowercase letters.\n";
+                                    break;
+                                case 'symbol':
+                                    indicator = json[key] === false ? " valid " : " not valid ";
+                                    output += "There is a" + indicator + "number of special symbols.\n";
+                                    break;
+                            }
+                        }
+                        message_output.innerText = output;
+                        console.log(output);
+
+                    }
+                )
+
+            });
+        });
+    </script>
+</head>
 <body>
-    <form action="/register" method="post">
-        <label for="username">Username</label>
-        <br><br>
-        <input name="username" id="username" required>
-        <br><br>
-        <label for="password">Password</label>
-        <br><br>
-        <input type="password" name="password" id="password" required>
-        <br><br>
-        <label for="password_repeat">Repeat password</label>
-        <br><br>
-        <input type="password" name="password_repeat" id="password_repeat" required>
-        <input type="submit" value="Register">
-    </form>
-    <h3 name="result_info">{{result_info}}</h3>
-    </head>
+<form action="/register" method="post">
+    <label for="username">Username</label>
+    <h6>Hint: username should only consist of letters and digits and should be between 5 and 16 characters.</h6>
+    <input name="username" id="username" required>
+    <h6>Hint: password should be 8 or more characters long, have 1 or ore digits, have 1 or more special symbols, have
+        at least one uppercase and at least one lowercase letter.</h6>
+    <label for="password">Password</label>
+    <br><br>
+    <input type="password" name="password" id="password" required>
+    <h6 id="password_criteria"></h6>
+    <br><br>
+    <label for="password_repeat">Repeat password</label>
+    <br><br>
+    <input type="password" name="password_repeat" id="password_repeat" required>
+    <input type="submit" value="Register">
+</form>
+<h3 name="result_info">{{result_info}}</h3>
 
-    <body>
-
-    </body>
+</body>
 
 </html>

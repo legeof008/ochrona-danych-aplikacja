@@ -32,10 +32,13 @@
             <p style="font-size: 10px"> id: {{ entry.id }}</p>
             <p style="font-size: 10px"> username: {{ entry.username }}</p>
             <p style="font-size: 10px"> service name: {{ entry.servicename }}</p>
-            <p style="font-size: 10px"> {{ entry.password }}</p>
             <p style="font-size: 10px"> owner: {{ entry.owner }}</p>
             <form action="/entry-delete?id={{entry.id}}" method="post">
                 <button name="button{{entry.id}}" value="Delete">Delete</button>
+            </form>
+            <br><br>
+            <form action="/entry-reveal?id={{entry.id}}" method="post">
+                <button name="button{{entry.id}}" value="Delete">Reveal</button>
             </form>
         </div>
         {% endfor %}

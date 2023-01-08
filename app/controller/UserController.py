@@ -1,7 +1,9 @@
+import json
+
 from flask import Blueprint, request, render_template, redirect
 from flask_login import login_required
 
-from controller.service.UserHandlingService import UserHandlingService, is_logged
+from controller.service.UserHandlingService import UserHandlingService, is_logged, password_criteria
 from model.project_configuration import db
 
 user_handler = Blueprint('user_handler', __name__, template_folder='../static/templates')
@@ -49,4 +51,13 @@ def register():
     elif service.register(username, password):
         return redirect("/login", 302)
     else:
-        return render_template("register.html", result_info="User already exists")
+        return render_template("register.html",
+                               result_info="User already exists or password is not strong enough or username is not "
+                                           "as defined.")
+
+
+@user_handler.route("/password", methods=["GET"])
+def password_check():
+    password = request.args.get("check")
+
+    return json.dumps(password_criteria(password))

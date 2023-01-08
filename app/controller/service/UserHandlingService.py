@@ -1,3 +1,5 @@
+import re
+
 import bcrypt
 from flask_login import login_user, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
@@ -5,6 +7,59 @@ from flask_sqlalchemy import SQLAlchemy
 from model.User import User
 from model.project_configuration import login_manager
 
+username_pattern = "^([a-z]|[A-Z]|[0-9]){4,16}$"
+
+def password_criteria(password: str) -> {}:
+    """
+    Verify the strength of 'password'
+    Returns a dict indicating the wrong criteria
+    A password is considered strong if:
+        8 characters length or more
+        1 digit or more
+        1 symbol or more
+        1 uppercase letter or more
+        1 lowercase letter or more
+    """
+
+    # calculating the length
+    length_error = len(password) < 4
+
+    # searching for digits
+    digit_error = re.search(r"\d", password) is None
+
+    # searching for uppercase
+    uppercase_error = re.search(r"[A-Z]", password) is None
+
+    # searching for lowercase
+    lowercase_error = re.search(r"[a-z]", password) is None
+
+    # searching for symbols
+    symbol_error = re.search(r"[ !#$%&'()*+,-./[\\\]^_`{|}~" + r'"]', password) is None
+
+    # overall result
+    password_ok = (length_error or digit_error or uppercase_error or lowercase_error or symbol_error)
+
+    return {
+        'password': password_ok,
+        'length': length_error,
+        'digits': digit_error,
+        'uppercase': uppercase_error,
+        'lowercase': lowercase_error,
+        'symbol': symbol_error,
+    }
+
+
+def username_safe(username: str) -> bool:
+    if re.search(username_pattern, username):
+        return True
+    return False
+
+def password_safe(password: str) -> bool:
+    run_check = password_criteria(password)
+    for criteria in run_check:
+        if run_check[criteria]:
+            return False
+    return True
 
 @login_manager.user_loader
 def user_loader(user_id: int) -> User:
@@ -35,6 +90,12 @@ class UserHandlingService:
         user = User.query.get(username)
         if user:
             """ Cannot register the same user twice """
+            return False
+        elif not username_safe(username):
+            """ Username is not safe by the standards in documentation"""
+            return False
+        elif not password_safe(password):
+            """ Password is not safe by the standards in documentation"""
             return False
         hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
         new_user = User(username, hashed_password)
