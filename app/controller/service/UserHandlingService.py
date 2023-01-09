@@ -1,3 +1,4 @@
+import random
 import re
 
 import bcrypt
@@ -8,6 +9,7 @@ from model.User import User
 from model.project_configuration import login_manager
 
 username_pattern = "^([a-z]|[A-Z]|[0-9]){4,16}$"
+
 
 def password_criteria(password: str) -> {}:
     """
@@ -54,6 +56,7 @@ def username_safe(username: str) -> bool:
         return True
     return False
 
+
 def password_safe(password: str) -> bool:
     run_check = password_criteria(password)
     for criteria in run_check:
@@ -61,13 +64,14 @@ def password_safe(password: str) -> bool:
             return False
     return True
 
+
 @login_manager.user_loader
 def user_loader(user_id: int) -> User:
     return User.query.get(user_id)
 
 
-def is_logged():
-    return current_user.is_authenticated
+def is_logged(authenticator: int):
+    return current_user.is_authenticated and current_user.double_submit_num == authenticator
 
 
 def list_users() -> [str]:
@@ -108,6 +112,9 @@ class UserHandlingService:
         return True
 
     def login(self, username: str, password: str) -> bool:
+        if not username_safe(username):
+            """ Username wasn't safe """
+            return False
         user = User.query.get(username)
         if not user:
             """ No such user exists """
@@ -115,6 +122,9 @@ class UserHandlingService:
         if bcrypt.checkpw(password.encode(), user.password):
             """ User was able to log in"""
             user.authenticated = True
+            #
+            user.double_submit_num = random.randint(500000000, 10000000000)
+            #
             self.database.session.add(user)
             self.database.session.commit()
             login_user(user, remember=True)

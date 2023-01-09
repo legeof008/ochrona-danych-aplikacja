@@ -2,11 +2,12 @@ from model.project_configuration import db
 
 
 class User(db.Model):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, unique=True)
     username = db.Column(db.String, primary_key=True, unique=True, nullable=False)
     password = db.Column(db.String)
+    double_submit_num = db.Column(db.Integer, default=0)
     authenticated = db.Column(db.Boolean, default=False)
 
     def __init__(self, username, password):

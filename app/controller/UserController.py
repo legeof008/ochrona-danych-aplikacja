@@ -1,7 +1,7 @@
 import json
 
-from flask import Blueprint, request, render_template, redirect
-from flask_login import login_required
+from flask import Blueprint, request, render_template, redirect, make_response
+from flask_login import login_required, current_user
 
 from controller.service.UserHandlingService import UserHandlingService, is_logged, password_criteria
 from model.project_configuration import db
@@ -19,14 +19,16 @@ def redirect_login():
 def login():
     if request.method == "GET":
         return render_template("login.html")
-    if is_logged():
-        return redirect("/entry")
+    if request.cookies.get("XRS") and is_logged(int(request.cookies.get("XRS"))):
+        return redirect("/entry", 302)
 
     form_username = request.form.get("form-username")
     form_password = request.form.get("form-password")
 
     if service.login(form_username, form_password):
-        return redirect("/entry")
+        response = make_response(redirect("/entry", 302))
+        response.set_cookie("XRS", value=str(current_user.double_submit_num))
+        return response
     else:
         return render_template("login.html", result_info="Wrong login or password")
 
@@ -56,8 +58,8 @@ def register():
                                            "as defined.")
 
 
-@user_handler.route("/password", methods=["GET"])
+@user_handler.route("/password", methods=["POST"])
 def password_check():
-    password = request.args.get("check")
+    password = request.json.get("check")
 
     return json.dumps(password_criteria(password))

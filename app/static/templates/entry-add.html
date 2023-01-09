@@ -4,21 +4,100 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script>
+        window.addEventListener("load", function () {
+            entry_add = document.querySelector("form");
+            entry_add.addEventListener("submit", function (event) {
+                event.preventDefault();
+                let username_val = document.getElementById("username").value;
+                let password_val = document.getElementById("password").value;
+                let servicename_val = document.getElementById("servicename").value;
+                let special_password_val = document.getElementById("special_password").value;
+                let json_data = JSON.stringify({
+                    username: username_val,
+                    password: password_val,
+                    servicename: servicename_val,
+                    special_password: special_password_val
+                });
+                console.log(json_data)
+                fetch("/entry-add?" + new URLSearchParams({
+                    XRS: document.cookie.substring(4)
+                }), {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: json_data
+                    }
+                ).then((response) => {
+                    console.log(response.text())
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                });
+            });
+
+            password_input = document.getElementById("special_password");
+            message_output = document.getElementById("result_info")
+
+            password_input.addEventListener("input", function (event) {
+                    let data = JSON.stringify({
+                        check: password_input.value
+                    })
+                    fetch("/password", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: data
+                }
+            ).then((response) => response.json()).then((json) => {
+                let output = "";
+                let indicator = "";
+                for (let key in json) {
+                    switch (key) {
+                        case 'password':
+                            indicator = json[key] === false ? " valid.\n" : " not valid.\n";
+                            output += "Password is" + indicator;
+                            break;
+                        case 'length':
+                            indicator = json[key] === false ? " valid.\n" : " not valid.\n";
+                            output += "Length of the password is" + indicator;
+                            break;
+                        case 'digits':
+                            indicator = json[key] === false ? " valid " : " not valid ";
+                            output += "There is a" + indicator + "number of digits.\n";
+                            break;
+                        case 'uppercase':
+                            indicator = json[key] === false ? " valid " : " not valid ";
+                            output += "There is a" + indicator + "number of uppercase letters.\n";
+                            break;
+                        case 'lowercase':
+                            indicator = json[key] === false ? " valid " : " not valid ";
+                            output += "There is a" + indicator + "number of lowercase letters.\n";
+                            break;
+                        case 'symbol':
+                            indicator = json[key] === false ? " valid " : " not valid ";
+                            output += "There is a" + indicator + "number of special symbols.\n";
+                            break;
+                    }
+                }
+                message_output.innerText = output;
+                console.log(output);
+
+            });
+    </script>
 </head>
 
 <body>
-    <form action="/entry-add" method="post">
-        <label for="username">Username within of the account you wish to save password to:</label><br>
-        <input type="text" id="username" name="username"><br><br>
-        <label for="username">Password within to the account you wish to save password to:</label><br>
-        <input type="password" id="password" name="password"><br><br>
-        <label for="username">The name of the service of said account:</label><br>
-        <input type="text" id="servicename" name="servicename"><br><br>
-        <label for="username">Special password with which you wish to encrypt this account (leave empty for your default account password): </label><br>
-        <input type="password" id="special_password" name="special_password"><br><br>
-        <input type="submit" value="Submit">
-        <h3 name="result_info">{{result_info}}</h3>
-    </form>
+<form id="entry-add-form" action="/entry-add" method="post">
+    <label for="username">Username within of the account you wish to save password to:</label><br>
+    <input type="text" id="username" name="username"><br><br>
+    <label for="username">Password within to the account you wish to save password to:</label><br>
+    <input type="password" id="password" name="password"><br><br>
+    <label for="servicename">The name of the service of said account:</label><br>
+    <input type="text" id="servicename" name="servicename"><br><br>
+    <label for="special_password">Special password with which you wish to encrypt this account : </label><br>
+    <input type="password" id="special_password" name="special_password"><br><br>
+    <input type="submit" value="Submit" name="submit">
+    <h3 name="result_info">{{result_info}}</h3>
+</form>
 </body>
 
 </html>

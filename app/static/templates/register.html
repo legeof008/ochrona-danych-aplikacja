@@ -10,10 +10,14 @@
             message_output = document.getElementById("password_criteria")
 
             password_input.addEventListener("input", function (event) {
-
-                fetch("/password?" + new URLSearchParams({
-                    check: encodeURIComponent(password_input.value),
-                })).then((response) => response.json()).then((json) => {
+                let data = JSON.stringify({
+                    check: password_input.value
+                })
+                fetch("/password", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: data
+                }).then((response) => response.json()).then((json) => {
                         let output = "";
                         let indicator = "";
                         for (let key in json) {

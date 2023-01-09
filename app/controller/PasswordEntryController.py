@@ -1,7 +1,8 @@
 from flask import Blueprint, request, render_template, redirect
 from flask_login import login_required, current_user
 
-from controller.service.PasswordEntryService import PasswordEntryService, list_all
+from controller.service.PasswordEntryService import PasswordEntryService
+from controller.service.UserHandlingService import is_logged
 from model.project_configuration import db
 
 entry_handler = Blueprint('entry_handler', __name__, template_folder='/static/templates', static_folder='../static',
@@ -19,16 +20,17 @@ def entries():
 @entry_handler.route('/entry-add', methods=["GET", "POST"])
 @login_required
 def add_entry():
+    ## zabezpieczenia dla geta i posta
     if request.method == "GET":
         return render_template("entry-add.html")
-    username = request.form.get('username')
-    password = request.form.get('password')
-    servicename = request.form.get('servicename')
-    special_password = request.form.get('special_password')
+    username = request.json.get('username')
+    password = request.json.get('password')
+    servicename = request.json.get('servicename')
+    special_password = request.json.get('special_password')
     if not special_password:
-        return render_template("entry-add.html",result_info="The encryption password is required !")
-
-    service.add(username, password, special_password, servicename, current_user.username)
+        return render_template("entry-add.html", result_info="The encryption password is required !")
+    if is_logged(int(request.args.get("XRS"))):
+        service.add(username, password, special_password, servicename, current_user.username)
     return redirect("/entry", 302)
 
 
