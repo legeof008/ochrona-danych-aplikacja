@@ -47,7 +47,7 @@ Mimo iż nie chcę się jednoznacznie przywiązywać do jakiejkolwiek technolog
 
 # Roadmap funkcjonalności do zrobienia
 - [x] w pełni bezpieczna rejestracja
-- [ ] w pełni bezpieczne logowanie
+- [x] w pełni bezpieczne logowanie
 - [x] szyfrowanie haseł
 - [ ] deszyfrowanie haseł
 - [ ] zabezpieczenie timeout
