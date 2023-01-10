@@ -8,37 +8,16 @@ from flask_sqlalchemy import SQLAlchemy
 from model.User import User
 from model.project_configuration import login_manager
 
-username_pattern = "^([a-z]|[A-Z]|[0-9]){4,16}$"
-
+USERNAME_PATTERN = "^([a-z]|[A-Z]|[0-9]){4,16}$"
+PASSWORD_MIN_LEN = 4
+PASSWORD_MAX_LEN = 30
 
 def password_criteria(password: str) -> {}:
-    """
-    Verify the strength of 'password'
-    Returns a dict indicating the wrong criteria
-    A password is considered strong if:
-        8 characters length or more
-        1 digit or more
-        1 symbol or more
-        1 uppercase letter or more
-        1 lowercase letter or more
-    """
-
-    # calculating the length
-    length_error = len(password) < 4
-
-    # searching for digits
+    length_error = len(password) < PASSWORD_MIN_LEN or len(password) > PASSWORD_MAX_LEN
     digit_error = re.search(r"\d", password) is None
-
-    # searching for uppercase
     uppercase_error = re.search(r"[A-Z]", password) is None
-
-    # searching for lowercase
     lowercase_error = re.search(r"[a-z]", password) is None
-
-    # searching for symbols
     symbol_error = re.search(r"[ !#$%&'()*+,-./[\\\]^_`{|}~" + r'"]', password) is None
-
-    # overall result
     password_ok = (length_error or digit_error or uppercase_error or lowercase_error or symbol_error)
 
     return {
@@ -52,7 +31,7 @@ def password_criteria(password: str) -> {}:
 
 
 def username_safe(username: str) -> bool:
-    if re.search(username_pattern, username):
+    if re.search(USERNAME_PATTERN, username):
         return True
     return False
 
@@ -122,9 +101,7 @@ class UserHandlingService:
         if bcrypt.checkpw(password.encode(), user.password):
             """ User was able to log in"""
             user.authenticated = True
-            #
             user.double_submit_num = random.randint(500000000, 10000000000)
-            #
             self.database.session.add(user)
             self.database.session.commit()
             login_user(user, remember=True)

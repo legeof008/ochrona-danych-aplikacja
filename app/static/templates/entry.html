@@ -4,6 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script>
+        function removeEntry(entry) {
+            let json_data = JSON.stringify({
+                id: entry
+            })
+            console.log(json_data)
+            fetch("/entry-delete?" + new URLSearchParams({
+                token: document.cookie.substring(6)
+            }), {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: json_data
+                }
+            ).then((response) => {
+                console.log(response.text())
+                if (response.redirected) {
+                    window.location.href = response.url;
+                }
+            });
+        }
+
+        function revealEntry(entry) {
+            password_reveal = document.getElementById("password_show/" + entry);
+            hide = document.getElementById("hide/" + entry);
+            let password_val = document.getElementById("password/" + entry).value
+            let json_data = JSON.stringify({
+                id: entry,
+                password: password_val
+            })
+            fetch("/entry-reveal?" + new URLSearchParams({
+                token: document.cookie.substring(6)
+            }), {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: json_data
+                }
+            ).then((response) => {
+               return response.text();
+            }).then(
+                (text) => {
+                    password_reveal.innerText = text;
+                    hide.style.display='';
+                    hide.onclick = () => {
+                        password_reveal.innerText = "";
+                        hide.style.display='none';
+                        hide.onclick = () =>{}
+                    };
+                }
+            );
+        }
+
+    </script>
 
 </head>
 
@@ -24,14 +76,17 @@
         <p style="font-size: 10px"> id: {{ entry.id }}</p>
         <p style="font-size: 10px"> username: {{ entry.username }}</p>
         <p style="font-size: 10px"> service name: {{ entry.servicename }}</p>
-        <p style="font-size: 10px"> owner: {{ entry.owner }}</p>
-        <form action="/entry-delete?id={{entry.id}}" method="post">
-            <button name="button{{entry.id}}" value="Delete">Delete</button>
+        <form onsubmit="removeEntry({{entry.id}})" method="post">
+            <input type="submit" value="Delete">
         </form>
         <br><br>
-        <form action="/entry-reveal?id={{entry.id}}" method="post">
-            <button name="button{{entry.id}}" value="Delete">Reveal</button>
-        </form>
+        <div>
+            <input type="password" id="password/{{entry.id}}" name="password"><br><br>
+            <input onclick="revealEntry({{entry.id}})" type="submit" value="Reveal">
+        </div>
+        <h5 id="password_show/{{entry.id}}"></h5>
+        <h6 id="hidee/{{entry.id}}"></h6>
+        <input style="display: none" type="button" id="hide/{{entry.id}}" value="Hide" />
     </div>
     {% endfor %}
 </div>

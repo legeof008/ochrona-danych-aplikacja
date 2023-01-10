@@ -4,6 +4,7 @@ from flask_login import current_user
 from flask_sqlalchemy import SQLAlchemy
 from pbkdf2 import PBKDF2
 
+from controller.service.UserHandlingService import is_logged
 from model.PasswordEntry import PasswordEntry
 
 
@@ -42,17 +43,18 @@ def decrypt_with(username: str, password: str, ciphertext: bytes, salt: bytes, m
     return plaintext
 
 
+def authorized_with(request) -> bool:
+    return request.args.get("token") and is_logged(int(request.args.get("token")))
+
+
 class PasswordEntryService:
     def __init__(self, database: SQLAlchemy):
         self.database = database
 
     def add(self, username: str, password: str, special_password: str, servicename: str, owner: str):
         salt = get_random_bytes(10)
-
         cipher_text, mac_key, nonce_len = encrypt_with(special_password + username, password, salt)
-
         new_entry = PasswordEntry(username, cipher_text, servicename, owner, salt, mac_key, nonce_len)
-
         self.database.session.add(new_entry)
         self.database.session.commit()
 
@@ -67,3 +69,6 @@ class PasswordEntryService:
     def list_by_name(self, username) -> [PasswordEntry]:
         entries = self.database.session.query(PasswordEntry).filter(PasswordEntry.owner == username).all()
         return entries
+
+    def get(self, entry_id: int) -> PasswordEntry:
+        return PasswordEntry.query.get(entry_id)

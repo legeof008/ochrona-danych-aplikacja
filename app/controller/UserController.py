@@ -3,6 +3,7 @@ import json
 from flask import Blueprint, request, render_template, redirect, make_response
 from flask_login import login_required, current_user
 
+from controller.service.PasswordEntryService import authorized_with
 from controller.service.UserHandlingService import UserHandlingService, is_logged, password_criteria
 from model.project_configuration import db
 
@@ -18,16 +19,17 @@ def redirect_login():
 @user_handler.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
-    if request.cookies.get("token") and is_logged(int(request.cookies.get("token"))):
-        return redirect("/entry", 302)
+        if authorized_with(request):
+            return redirect("/entry", 302)
+        else:
+            return render_template("login.html")
 
     form_username = request.form.get("form-username")
     form_password = request.form.get("form-password")
 
     if service.login(form_username, form_password):
         response = make_response(redirect("/entry", 302))
-        response.set_cookie("XRS", value=str(current_user.double_submit_num))
+        response.set_cookie("token", value=str(current_user.double_submit_num))
         return response
     else:
         return render_template("login.html", result_info="Wrong login or password")
