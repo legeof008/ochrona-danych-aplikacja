@@ -19,7 +19,7 @@ def redirect_login():
 def login():
     if request.method == "GET":
         return render_template("login.html")
-    if request.cookies.get("XRS") and is_logged(int(request.cookies.get("XRS"))):
+    if request.cookies.get("token") and is_logged(int(request.cookies.get("token"))):
         return redirect("/entry", 302)
 
     form_username = request.form.get("form-username")
@@ -36,7 +36,8 @@ def login():
 @user_handler.route("/logout", methods=["GET"])
 @login_required
 def logout():
-    return redirect(service.logout(), 302)
+    service.logout()
+    return redirect("/login", 302)
 
 
 @user_handler.route("/register", methods=["GET", "POST"])

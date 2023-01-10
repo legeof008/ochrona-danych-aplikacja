@@ -21,7 +21,7 @@
                 });
                 console.log(json_data)
                 fetch("/entry-add?" + new URLSearchParams({
-                    XRS: document.cookie.substring(4)
+                    token: document.cookie.substring(4)
                 }), {
                         method: "POST",
                         headers: {"Content-Type": "application/json"},

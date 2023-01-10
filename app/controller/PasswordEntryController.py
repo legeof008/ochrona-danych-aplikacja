@@ -20,7 +20,6 @@ def entries():
 @entry_handler.route('/entry-add', methods=["GET", "POST"])
 @login_required
 def add_entry():
-    ## zabezpieczenia dla geta i posta
     if request.method == "GET":
         return render_template("entry-add.html")
     username = request.json.get('username')
@@ -29,7 +28,7 @@ def add_entry():
     special_password = request.json.get('special_password')
     if not special_password:
         return render_template("entry-add.html", result_info="The encryption password is required !")
-    if is_logged(int(request.args.get("XRS"))):
+    if request.args.get("XRS") and is_logged(int(request.args.get("XRS"))):
         service.add(username, password, special_password, servicename, current_user.username)
     return redirect("/entry", 302)
 
