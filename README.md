@@ -49,5 +49,5 @@ Mimo iż nie chcę się jednoznacznie przywiązywać do jakiejkolwiek technolog
 - [x] w pełni bezpieczna rejestracja
 - [x] w pełni bezpieczne logowanie
 - [x] szyfrowanie haseł
-- [ ] deszyfrowanie haseł
+- [x] deszyfrowanie haseł
 - [ ] zabezpieczenie timeout
