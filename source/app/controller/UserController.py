@@ -3,8 +3,7 @@ import json
 from flask import Blueprint, request, render_template, redirect, make_response
 from flask_login import login_required, current_user
 
-from controller.service.PasswordEntryService import authorized_with
-from controller.service.UserHandlingService import UserHandlingService, is_logged, password_criteria
+from controller.service.UserHandlingService import UserHandlingService, password_criteria
 from model.project_configuration import db
 
 user_handler = Blueprint('user_handler', __name__, template_folder='../static/templates')
@@ -19,7 +18,7 @@ def redirect_login():
 @user_handler.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        if authorized_with(request):
+        if current_user.is_authenticated:
             return redirect("/entry", 302)
         else:
             return render_template("login.html")

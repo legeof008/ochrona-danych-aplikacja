@@ -1,3 +1,4 @@
+import bleach
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from flask_login import current_user
@@ -6,6 +7,9 @@ from pbkdf2 import PBKDF2
 
 from controller.service.UserHandlingService import is_logged
 from model.PasswordEntry import PasswordEntry
+
+allowed_tags = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "strong", "em", "ol", "ul", "li",
+                "nano"]
 
 
 def list_all() -> [PasswordEntry]:
@@ -53,7 +57,8 @@ class PasswordEntryService:
 
     def add(self, username: str, password: str, special_password: str, servicename: str, owner: str):
         salt = get_random_bytes(10)
-        cipher_text, mac_key, nonce_len = encrypt_with(special_password + username, password, salt)
+        bleached_input = bleach.clean(password, tags=allowed_tags)
+        cipher_text, mac_key, nonce_len = encrypt_with(special_password + username, bleached_input, salt)
         new_entry = PasswordEntry(username, cipher_text, servicename, owner, salt, mac_key, nonce_len)
         self.database.session.add(new_entry)
         self.database.session.commit()

@@ -26,6 +26,7 @@
         }
 
         function revealEntry(entry) {
+            var status_of_response;
             password_reveal = document.getElementById("password_show/" + entry);
             hide = document.getElementById("hide/" + entry);
             let password_val = document.getElementById("password/" + entry).value
@@ -41,16 +42,26 @@
                     body: json_data
                 }
             ).then((response) => {
-               return response.text();
+                status_of_response = response.status;
+                return response.text();
             }).then(
                 (text) => {
-                    password_reveal.innerText = text;
-                    hide.style.display='';
-                    hide.onclick = () => {
-                        password_reveal.innerText = "";
-                        hide.style.display='none';
-                        hide.onclick = () =>{}
-                    };
+                    if (status_of_response === 401 || status_of_response === 400) {
+                        password_reveal.innerText = text;
+                        hide.style.display = '';
+                        hide.onclick = () => {
+                            password_reveal.innerText = "";
+                            hide.style.display = 'none';
+                            hide.onclick = () => {
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        document.body.innerHTML = text;
+                    }
+
                 }
             );
         }
@@ -86,7 +97,7 @@
         </div>
         <h5 id="password_show/{{entry.id}}"></h5>
         <h6 id="hidee/{{entry.id}}"></h6>
-        <input style="display: none" type="button" id="hide/{{entry.id}}" value="Hide" />
+        <input style="display: none" type="button" id="hide/{{entry.id}}" value="Hide"/>
     </div>
     {% endfor %}
 </div>

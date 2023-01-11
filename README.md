@@ -34,20 +34,41 @@ Algorytm by wyglądał tak:
 - kolejne 256 bitów będzie kluczem szyfru dla AES-256,
 - ostatnie 256 bitów zostanie użytych do uwieżytelnienia szyfrowania.
 ```python
-key = PBKDF2-SHA256(password, salt, 50000, 80)
+key = PBKDF2-SHA256(password+username, salt, 50000, 80)
 iv = key[0:128]
 cipherKey = key[128:384]
 macKey = key[384:640]
 ```
 ![full_db_schema](https://user-images.githubusercontent.com/72550341/208316291-943b19dd-086e-496f-97cc-17f6977f133b.png)
 
+Hasła będą musiały być dodatkowo rozciągane do wielokrotności 16-stu ze względu na ograniczenia `AES`. Długość nonce'a będzie przechowywana w bazie danych.
+
 Plusem takiego rozwiązania jest jednoznaczna uwierzytelnienia metodą "coś co wiem". Minusem jest brak innej metody aby zwiększyć skuteczność rozwiązania. Dodatkowo w przypadku zgubienia klucza (hasło nie będzie przechowywane w bazie danych ) dane przepadają.
+## Komuniacja Sieciowa
+Komunikacja między serwerem a klientem będzie szyfrowana tzn. przekazywana protokołem `https` w celu zachowania poufności nie tylko danych wymienianych kanałami poufnymi jak i by zabezpieczyć dodatkowo metodę `double submit cookie`.
+
+
 ## Rozwiązania technologiczne
-Mimo iż nie chcę się jednoznacznie przywiązywać do jakiejkolwiek technologii, to na pewno wiem, że będę używał pythonowego **flask'a** oraz jego podpakietów zorientowanych pod poszczególne funkcjonalności jak np. **flask-login**,**flask-sql** etc. Jak w każdym projekcie, założenia projektu mogą ewoluować ze względu na ograniczenia techniczne, ja jednak wolałbym granicę teoretyczną pozostawić twardą, a techniczną nieco bardziej płynną.
+Mimo iż nie chcę się jednoznacznie przywiązywać do jakiejkolwiek technologii, to na pewno wiem, że będę używał pythonowego **flask'a** oraz jego podpakietów zorientowanych pod poszczególne funkcjonalności jak np. **flask-login**,**flask-sqlalchemy** etc. Jak w każdym projekcie, założenia projektu mogą ewoluować ze względu na ograniczenia techniczne, ja jednak wolałbym granicę teoretyczną pozostawić twardą, a techniczną nieco bardziej płynną.
+# Użycie
+## Przygotowanie
+Aplikacja została zdockeryzowana i korzysta z `docker-compose` w ramach gdyby nie był on dostępny należy zmienić linijkę w `Makefile` z:
+```Makefile
+DOCKER_COMPOSE=docker-compose
+```
+na:
+```Makefile
+DOCKER_COMPOSE=docker compose
+```
+## Skorzystanie z aplikacji
+Aplikacja wykorzystuje port `8080` i włącznie przyjmuje zapytania protokołem `https`. Wykorzystywany jest podpisany przeze mnie certyfikat, więc komunikaty o niezaufanym połączeniu będą się pojawiały. Aplikacja dostępna powinna być pod adresem: 
+```
+https://localhost:8080/
+```
 
 # Roadmap funkcjonalności do zrobienia
 - [x] w pełni bezpieczna rejestracja
 - [x] w pełni bezpieczne logowanie
 - [x] szyfrowanie haseł
 - [x] deszyfrowanie haseł
-- [ ] zabezpieczenie timeout
+- [x] zabezpieczenie timeout

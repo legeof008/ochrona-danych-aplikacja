@@ -1,0 +1,7 @@
+services:
+  safe-app:
+    build:
+      context: ./source
+      dockerfile: Dockerfile
+    ports:
+      - "8080:443"

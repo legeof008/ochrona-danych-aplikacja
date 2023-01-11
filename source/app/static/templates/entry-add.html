@@ -6,6 +6,7 @@
     <title>Title</title>
     <script>
         window.addEventListener("load", function () {
+            var response_status;
             entry_add = document.querySelector("form");
             warning = document.getElementById("result_info");
             entry_add.addEventListener("submit", function (event) {
@@ -20,7 +21,6 @@
                     servicename: servicename_val,
                     special_password: special_password_val
                 });
-                console.log(json_data)
                 fetch("/entry-add?" + new URLSearchParams({
                     token: document.cookie.substring(6)
                 }), {
@@ -29,12 +29,15 @@
                         body: json_data
                     }
                 ).then((response) => {
+
                     if (response.redirected) {
+                        response_status = true;
                         window.location.href = response.url;
                     }
                     return response.text();
                 }).then((text) => {
-                    warning.innerText = text;
+                    if(!response_status)
+                        warning.innerText = text;
                 });
             });
 
@@ -82,7 +85,6 @@
                         }
                     }
                     message_output.innerText = output;
-                    console.log(output);
 
                 });
             });
@@ -95,7 +97,7 @@
     <label for="username">Username within of the account you wish to save password to:</label><br>
     <input type="text" id="username" name="username"><br><br>
     <label for="username">Password within to the account you wish to save password to:</label><br>
-    <input type="password" id="password" name="password"><br><br>
+    <textarea rows="20" cols="100" id="password" name="password"></textarea><br><br>
     <label for="servicename">The name of the service of said account:</label><br>
     <input type="text" id="servicename" name="servicename"><br><br>
     <label for="special_password">Special password with which you wish to encrypt this account, should be between 4 and 30 characters : </label><br>
@@ -104,6 +106,11 @@
     <h5 id="result_info_strenght"></h5>
 </form>
     <h5 id="result_info"></h5>
+
+
+<form id="entries" action="/entry" method="get">
+    <input type="submit" value="Entries">
+</form>
 </body>
 
 </html>
