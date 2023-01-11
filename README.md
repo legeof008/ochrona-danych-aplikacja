@@ -4,7 +4,7 @@ Użytwkonij jest identyfikowany przy pomocy swojego loginu i hasła. Ponadto zna
 
 Warto więc na samym początku ukazać relację pomiędzy danymi wyczytywanymi i walidowanymi przez aplikację.
 
-![db_schema](https://user-images.githubusercontent.com/72550341/208308172-88c20c51-d098-45de-952c-17d4f84969cc.png)
+![db_schema](https://user-images.githubusercontent.com/72550341/211797664-6d794ec1-814b-4a24-9292-1482500c1421.png)
 
 
 # Zastosowane rozwiązania
@@ -39,7 +39,6 @@ iv = key[0:128]
 cipherKey = key[128:384]
 macKey = key[384:640]
 ```
-![full_db_schema](https://user-images.githubusercontent.com/72550341/208316291-943b19dd-086e-496f-97cc-17f6977f133b.png)
 
 Hasła będą musiały być dodatkowo rozciągane do wielokrotności 16-stu ze względu na ograniczenia `AES`. Długość nonce'a będzie przechowywana w bazie danych.
 
