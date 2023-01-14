@@ -60,6 +60,18 @@ na:
 DOCKER_COMPOSE=docker compose
 ```
 ## Skorzystanie z aplikacji
+Aby uruchomić kontener należy użyć:
+```
+make start
+```
+Aby zatrzymać kontener należy użyć:
+```
+make stop
+```
+Aby usunąć niepotrzebne obrazy należy użyć:\
+```
+make clean
+```
 Aplikacja wykorzystuje port `8080` i włącznie przyjmuje zapytania protokołem `https`. Wykorzystywany jest podpisany przeze mnie certyfikat, więc komunikaty o niezaufanym połączeniu będą się pojawiały. Aplikacja dostępna powinna być pod adresem: 
 ```
 https://localhost:8080/
