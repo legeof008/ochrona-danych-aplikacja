@@ -9,9 +9,4 @@ with app.app_context():
     db.create_all()
  
 if __name__ == '__main__':
-#    with app.app_context():
-#        db.create_all()
-    #    admin_user = User("lul", bcrypt.hashpw("lul".encode(), bcrypt.gensalt()).decode("utf-8"))
-    #    db.session.add(admin_user)
-    #    db.session.commit()
-   app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0")

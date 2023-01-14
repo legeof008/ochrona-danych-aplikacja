@@ -1,4 +1,5 @@
 import bleach
+import markdown
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from flask_login import current_user
@@ -31,7 +32,8 @@ def encrypt_with(password: str, plaintext: str, salt: bytes) -> [bytes]:
     cipher = AES.new(cipher_key, AES.MODE_CBC, iv)
     difference = 16 - (len(plaintext) % 16)
     nonce = get_random_bytes(difference)
-    cipher_text = cipher.encrypt(plaintext.encode() + nonce)
+    full = plaintext.encode() + nonce
+    cipher_text = cipher.encrypt(full)
 
     return [cipher_text, mac_key, difference]
 
@@ -57,7 +59,8 @@ class PasswordEntryService:
 
     def add(self, username: str, password: str, special_password: str, servicename: str, owner: str):
         salt = get_random_bytes(10)
-        bleached_input = bleach.clean(password, tags=allowed_tags)
+        html_plaintext = markdown.markdown(password)
+        bleached_input = bleach.clean(html_plaintext, tags=allowed_tags)
         cipher_text, mac_key, nonce_len = encrypt_with(special_password + username, bleached_input, salt)
         new_entry = PasswordEntry(username, cipher_text, servicename, owner, salt, mac_key, nonce_len)
         self.database.session.add(new_entry)
