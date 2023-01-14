@@ -64,10 +64,4 @@ Aplikacja wykorzystuje port `8080` i włącznie przyjmuje zapytania protokołem 
 ```
 https://localhost:8080/
 ```
-
-# Roadmap funkcjonalności do zrobienia
-- [x] w pełni bezpieczna rejestracja
-- [x] w pełni bezpieczne logowanie
-- [x] szyfrowanie haseł
-- [x] deszyfrowanie haseł
-- [x] zabezpieczenie timeout
+Notatki zapisuje się w formie `Markdown`.
